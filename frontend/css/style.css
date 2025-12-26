@@ -1,0 +1,40 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.home-section {
+  min-height: calc(100vh - 120px); 
+  /* 120px ≈ header + footer height */
+
+  background: linear-gradient(to right, #4e73df, #1cc88a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+}
+
+.login-section {
+  background: linear-gradient(to right, #4e73df, #1cc88a);
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 360px;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+.register-card {
+  width: 420px;        /* smaller & neat */
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+
+.register-card .form-group {
+  margin-bottom: 10px; /* tighter spacing */
+}
