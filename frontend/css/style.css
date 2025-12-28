@@ -1,10 +1,50 @@
+/* Header / Navbar enhancement */
+.navbar {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  font-size: 17px;
+  background-color:#212529 !important;
+}
+
+.navbar-brand {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.navbar-nav .nav-link {
+  margin-left: 10px;
+  color:#ffffff !important;
+  font-weight: 500;
+}
+.navbar-nav .nav-link:hover {
+  color: #1cc88a !important;
+}
+
+.footer {
+  padding: 6px 0;
+  font-size: 12px;
+  text-align: center;
+  background-color:#f8f9fa;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+footer {
+  margin-top: auto;
+}
+
+
 html, body {
   height: 100%;
   margin: 0;
 }
 
 .home-section {
-  min-height: calc(100vh - 120px); 
+  min-height: calc(100vh - 110px); 
   /* 120px ≈ header + footer height */
 
   background: linear-gradient(to right, #4e73df, #1cc88a);
@@ -37,4 +77,49 @@ html, body {
 
 .register-card .form-group {
   margin-bottom: 10px; /* tighter spacing */
+}
+
+.about-container {
+  max-width: 900px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 40px;
+  border-radius: 12px;
+  color: #ffffff;
+}
+
+.about-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.about-container .intro {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.about-card {
+  background: #ffffff;
+  color: #333;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.about-card h3 {
+  margin-bottom: 10px;
+  color: #4e73df;
+}
+
+.about-container form {
+  margin-top: 20px;
+}
+
+.about-container label {
+  font-weight: 500;
+}
+
+.login-card-fix {
+  max-width: 420px;
+  margin: auto;
 }
