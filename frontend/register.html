@@ -9,6 +9,7 @@
       flex-wrap: wrap;
       gap: 0;
     }
+
     .navbar-welcome {
       display: flex;
       align-items: center;
@@ -17,6 +18,7 @@
       padding-left: 20px;
       border-left: 1px solid rgba(255, 255, 255, 0.2);
     }
+
     .welcome-text {
       color: #fff;
       font-size: 14px;
@@ -24,10 +26,12 @@
       margin: 0;
       white-space: nowrap;
     }
+
     .welcome-username {
       color: #ffc107;
       font-weight: 700;
     }
+
     .btn-logout {
       background-color: #dc3545;
       color: white;
@@ -41,6 +45,7 @@
       text-decoration: none;
       white-space: nowrap;
     }
+
     .btn-logout:hover {
       background-color: #c82333;
       color: white;
@@ -53,12 +58,12 @@
       const username = localStorage.getItem('loggedInUsername');
       const loginLink = document.querySelector('a[href="login.html"]');
       const navbarRight = document.querySelector('.navbar-nav.ml-auto');
-      
+
       if (username) {
         if (loginLink) {
           loginLink.parentElement.style.display = 'none';
         }
-        
+
         const welcomeDiv = document.createElement('div');
         welcomeDiv.className = 'navbar-welcome';
         welcomeDiv.innerHTML = `
@@ -86,6 +91,7 @@
         const companyName = document.getElementById('companyName').value.trim();
         const industry = document.getElementById('industry').value.trim();
         const userAddress = document.getElementById('userAddress').value.trim();
+        const role = document.getElementById('roleSelect').value;
 
         // Validate passwords match
         if (userPassword !== confirmPassword) {
@@ -104,14 +110,14 @@
           fullName: fullName,
           userEmail: userEmail,
           userPassword: userPassword,
-          confirmPassword: parseInt(confirmPassword),
+          confirmPassword: confirmPassword,
           userAddress: userAddress,
           username: username,
           securityQuestion: securityQuestion || null,
           securityAnswer: securityAnswer || null,
           companyName: companyName || 'NA',
           industry: industry || null,
-          isUser: true
+          isUser: (role === 'User')
         };
 
         try {
@@ -143,7 +149,7 @@
         }
       });
     });
-    
+
     function logout() {
       localStorage.removeItem('loggedInUsername');
       alert('You have been logged out.');
@@ -204,7 +210,8 @@
 
               <div class="form-group">
                 <label>Confirm Password</label>
-                <input id="confirmPassword" type="password" class="form-control" placeholder="Re-enter password" required>
+                <input id="confirmPassword" type="password" class="form-control" placeholder="Re-enter password"
+                  required>
               </div>
 
               <div class="form-group">
@@ -221,10 +228,19 @@
                 <label>Security Answer</label>
                 <input id="securityAnswer" type="text" class="form-control" placeholder="Your answer">
               </div>
+              
+              <div class="form-group">
+                <label>Role / Permission</label>
+                <select id="roleSelect" class="form-control" required>
+                  <option value="User" selected>User</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
 
               <div class="form-group">
                 <label>Business Address</label>
-                <textarea id="userAddress" class="form-control" rows="3" placeholder="Business address" required></textarea>
+                <textarea id="userAddress" class="form-control" rows="3" placeholder="Business address"
+                  required></textarea>
               </div>
             </div>
           </div>
