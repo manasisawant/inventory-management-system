@@ -1,6 +1,144 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+  <style>
+    .navbar-nav.ml-auto {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+    .navbar-welcome {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-left: 20px;
+      padding-left: 20px;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .welcome-text {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0;
+      white-space: nowrap;
+    }
+    .welcome-username {
+      color: #ffc107;
+      font-weight: 700;
+    }
+    .btn-logout {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-logout:hover {
+      background-color: #c82333;
+      color: white;
+      text-decoration: none;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Navbar authentication logic
+      const username = localStorage.getItem('loggedInUsername');
+      const loginLink = document.querySelector('a[href="login.html"]');
+      const navbarRight = document.querySelector('.navbar-nav.ml-auto');
+      
+      if (username) {
+        if (loginLink) {
+          loginLink.parentElement.style.display = 'none';
+        }
+        
+        const welcomeDiv = document.createElement('div');
+        welcomeDiv.className = 'navbar-welcome';
+        welcomeDiv.innerHTML = `
+          <p class="welcome-text">Welcome, <span class="welcome-username">${username}</span>!</p>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        `;
+        navbarRight.appendChild(welcomeDiv);
+      }
+
+      const form = document.getElementById('loginForm');
+      if (!form) return;
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const usernameInput = document.getElementById('username').value.trim();
+        const userPassword = document.getElementById('userPassword').value;
+
+        if (!usernameInput || !userPassword) {
+          alert('Please enter username and password');
+          return;
+        }
+
+        // Build URL with query parameters as in the curl command
+        const url = `http://localhost:8080/api/users/login?username=${encodeURIComponent(usernameInput)}&userPassword=${encodeURIComponent(userPassword)}`;
+
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json'
+            },
+            body: '' // match the curl which sends an empty body (--data '')
+          });
+
+          const responseText = await res.text();
+          console.log('Response Status:', res.status);
+          console.log('Response Headers:', res.headers);
+          console.log('Response Body:', responseText);
+
+          if (res.ok) {
+            // Try to parse JSON if available
+            let data = null;
+            try {
+              if (responseText) {
+                data = (responseText);
+              }
+            } catch (e) {
+              console.warn('Response is not valid JSON:', e);
+            }
+
+            // Log parsed data if available
+            if (data === 'User login successfully') {
+              console.log('Parsed data:', data);
+              // Store username in localStorage
+              localStorage.setItem('loggedInUsername', usernameInput);
+              alert('Login successful!');
+              // Redirect after a brief delay to see the response
+              setTimeout(() => {
+                window.location.href = 'home.html';
+              }, 1500);
+            } else {
+              alert('Please check credentials.');
+            }
+          } else {
+            alert('Login failed: ' + res.status + ' ' + (responseText || res.statusText));
+          }
+        } catch (err) {
+          alert('Network/error: ' + err.message);
+          console.error('Fetch error:', err);
+        }
+      });
+    });
+    
+    function logout() {
+      localStorage.removeItem('loggedInUsername');
+      alert('You have been logged out.');
+      window.location.href = 'login.html';
+    }
+  </script>
   <title>Inventory Management System</title>
   <link rel="stylesheet" href="sb-admin/css/sb-admin-2.min.css">
   <link rel="stylesheet" href="css/style.css">
@@ -8,73 +146,76 @@
 
 <body>
 
-<!-- TOP NAVBAR (STATIC) -->
-<nav class="navbar navbar-expand navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Inventory Management System</a>
+  <!-- TOP NAVBAR (STATIC) -->
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Inventory Management System</a>
 
-  <ul class="navbar-nav ml-auto">
-    <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
-    <li class="nav-item"><a class="nav-link" href="register.html">Register</a></li>
-    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
-    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
-  </ul>
-</nav>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="register.html">Register</a></li>
+      <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+      <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+    </ul>
+  </nav>
 
-<!-- PAGE CONTENT (LOGIN PAGE) -->
- 
+  <!-- PAGE CONTENT (LOGIN PAGE) -->
+
   <div class="home-section">
-  <div class="about-container">
+    <div class="about-container">
 
-    <h1 class="text-center mb-4.5">Login</h1>
+      <h1 class="text-center mb-4.5">Login</h1>
 
-    <div class="row justify-content-center">
-      <div class="col-md-12">
+      <div class="row justify-content-center">
+        <div class="col-md-12">
 
-        <div class="about-card login-card-fix">
+          <div class="about-card login-card-fix">
 
-          <!-- Friendly heading -->
-          <div class="text-center mb-4">
-            <h4>Welcome 👋</h4>
-            <p>Please login to continue</p>
+            <!-- Friendly heading -->
+            <div class="text-center mb-4">
+              <h4>Welcome 👋</h4>
+              <p>Please login to continue</p>
+            </div>
+
+            <form id="loginForm">
+              <!-- Username -->
+              <div class="form-group">
+                <label>Username</label>
+                <input id="username" name="username" type="text" class="form-control" placeholder="Enter your username"
+                  required>
+              </div>
+
+              <!-- Password -->
+              <div class="form-group">
+                <label>Password</label>
+                <input id="userPassword" name="userPassword" type="password" class="form-control"
+                  placeholder="Enter your password" required>
+              </div>
+
+              <!-- Forgot password -->
+              <div class="text-right mb-3">
+                <a href="#">Forgot password?</a>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block">
+                Login
+              </button>
+            </form>
+
           </div>
 
-          <form>
-            <!-- Username -->
-            <div class="form-group">
-              <label>Username</label>
-              <input type="text" class="form-control" placeholder="Enter your username" required>
-            </div>
-
-            <!-- Password -->
-            <div class="form-group">
-              <label>Password</label>
-              <input type="password" class="form-control" placeholder="Enter your password" required>
-            </div>
-
-            <!-- Forgot password -->
-            <div class="text-right mb-3">
-              <a href="#">Forgot password?</a>
-            </div>
-
-            <button class="btn btn-primary btn-block">
-              Login
-            </button>
-          </form>
-
         </div>
-
       </div>
+
     </div>
-
   </div>
-</div>
 
-  
 
-<!-- FOOTER (STATIC) -->
-<footer class="bg-light text-center p-3 mt-0">
-  Inventory Management System © 2025
-</footer>
+
+  <!-- FOOTER (STATIC) -->
+  <footer class="bg-light text-center p-3 mt-0">
+    Inventory Management System © 2025
+  </footer>
 
 </body>
+
 </html>

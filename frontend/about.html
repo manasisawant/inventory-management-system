@@ -1,6 +1,78 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <style>
+    .navbar-nav.ml-auto {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+    .navbar-welcome {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-left: 20px;
+      padding-left: 20px;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .welcome-text {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0;
+      white-space: nowrap;
+    }
+    .welcome-username {
+      color: #ffc107;
+      font-weight: 700;
+    }
+    .btn-logout {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-logout:hover {
+      background-color: #c82333;
+      color: white;
+      text-decoration: none;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const username = localStorage.getItem('loggedInUsername');
+      const loginLink = document.querySelector('a[href="login.html"]');
+      const navbarRight = document.querySelector('.navbar-nav.ml-auto');
+      
+      if (username) {
+        if (loginLink) {
+          loginLink.parentElement.style.display = 'none';
+        }
+        
+        const welcomeDiv = document.createElement('div');
+        welcomeDiv.className = 'navbar-welcome';
+        welcomeDiv.innerHTML = `
+          <p class="welcome-text">Welcome, <span class="welcome-username">${username}</span>!</p>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        `;
+        navbarRight.appendChild(welcomeDiv);
+      }
+    });
+    
+    function logout() {
+      localStorage.removeItem('loggedInUsername');
+      alert('You have been logged out.');
+      window.location.href = 'login.html';
+    }
+  </script>
   <title>Inventory Management System</title>
   <link rel="stylesheet" href="sb-admin/css/sb-admin-2.min.css">
   <link rel="stylesheet" href="css/style.css">

@@ -1,6 +1,155 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+  <style>
+    .navbar-nav.ml-auto {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+    .navbar-welcome {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-left: 20px;
+      padding-left: 20px;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .welcome-text {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0;
+      white-space: nowrap;
+    }
+    .welcome-username {
+      color: #ffc107;
+      font-weight: 700;
+    }
+    .btn-logout {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-logout:hover {
+      background-color: #c82333;
+      color: white;
+      text-decoration: none;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Navbar authentication logic
+      const username = localStorage.getItem('loggedInUsername');
+      const loginLink = document.querySelector('a[href="login.html"]');
+      const navbarRight = document.querySelector('.navbar-nav.ml-auto');
+      
+      if (username) {
+        if (loginLink) {
+          loginLink.parentElement.style.display = 'none';
+        }
+        
+        const welcomeDiv = document.createElement('div');
+        welcomeDiv.className = 'navbar-welcome';
+        welcomeDiv.innerHTML = `
+          <p class="welcome-text">Welcome, <span class="welcome-username">${username}</span>!</p>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        `;
+        navbarRight.appendChild(welcomeDiv);
+      }
+
+      // Register form handler
+      const registerForm = document.getElementById('registerForm');
+      if (!registerForm) return;
+
+      registerForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        // Get form values
+        const fullName = document.getElementById('fullName').value.trim();
+        const userEmail = document.getElementById('userEmail').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const userPassword = document.getElementById('userPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const securityQuestion = document.getElementById('securityQuestion').value;
+        const securityAnswer = document.getElementById('securityAnswer').value.trim();
+        const companyName = document.getElementById('companyName').value.trim();
+        const industry = document.getElementById('industry').value.trim();
+        const userAddress = document.getElementById('userAddress').value.trim();
+
+        // Validate passwords match
+        if (userPassword !== confirmPassword) {
+          alert('Passwords do not match!');
+          return;
+        }
+
+        // Validate required fields
+        if (!fullName || !userEmail || !username || !userPassword || !confirmPassword || !userAddress) {
+          alert('Please fill in all required fields!');
+          return;
+        }
+
+        // Build request payload matching the curl
+        const payload = {
+          fullName: fullName,
+          userEmail: userEmail,
+          userPassword: userPassword,
+          confirmPassword: parseInt(confirmPassword),
+          userAddress: userAddress,
+          username: username,
+          securityQuestion: securityQuestion || null,
+          securityAnswer: securityAnswer || null,
+          companyName: companyName || 'NA',
+          industry: industry || null,
+          isUser: true
+        };
+
+        try {
+          const res = await fetch('http://localhost:8080/api/users/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const responseText = await res.text();
+          console.log('Response Status:', res.status);
+          console.log('Response Body:', responseText);
+
+          if (res.ok) {
+            alert('Registration successful! Please login with your new account.');
+            // Redirect to login page
+            setTimeout(() => {
+              window.location.href = 'login.html';
+            }, 1500);
+          } else {
+            alert('Registration failed: ' + res.status + ' ' + (responseText || res.statusText));
+          }
+        } catch (err) {
+          alert('Network/error: ' + err.message);
+          console.error('Fetch error:', err);
+        }
+      });
+    });
+    
+    function logout() {
+      localStorage.removeItem('loggedInUsername');
+      alert('You have been logged out.');
+      window.location.href = 'login.html';
+    }
+  </script>
   <title>Inventory Management System</title>
   <link rel="stylesheet" href="sb-admin/css/sb-admin-2.min.css">
   <link rel="stylesheet" href="css/style.css">
@@ -8,124 +157,114 @@
 
 <body>
 
-<!-- TOP NAVBAR (STATIC) -->
-<nav class="navbar navbar-expand navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Inventory Management System</a>
+  <!-- TOP NAVBAR (STATIC) -->
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Inventory Management System</a>
 
-  <ul class="navbar-nav ml-auto">
-    <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
-    <li class="nav-item"><a class="nav-link" href="Register.html">Register</a></li>
-    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
-    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
-  </ul>
-</nav>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item"><a class="nav-link" href="home.html">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="Register.html">Register</a></li>
+      <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+      <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+    </ul>
+  </nav>
 
-<!-- PAGE CONTENT (REGISTER PAGE) -->
- <form>
-  <div class="home-section">
-  <div class="about-container">
+  <!-- PAGE CONTENT (REGISTER PAGE) -->
+  <form id="registerForm">
+    <div class="home-section">
+      <div class="about-container">
 
-  <div class="row">
+        <div class="row">
 
-    <!-- LEFT COLUMN : USER DETAILS -->
-    <div class="col-md-6">
-      <div class="about-card">
+          <!-- LEFT COLUMN : USER DETAILS -->
+          <div class="col-md-6">
+            <div class="about-card">
 
-      <h5 class="text-primary mb-3">User Authentication & Profile</h5>
+              <h5 class="text-primary mb-3">User Authentication & Profile</h5>
 
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" class="form-control" placeholder="First and Last Name" required>
-      </div>
+              <div class="form-group">
+                <label>Full Name</label>
+                <input id="fullName" type="text" class="form-control" placeholder="First and Last Name" required>
+              </div>
 
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" class="form-control" placeholder="example@email.com" required>
-      </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <input id="userEmail" type="email" class="form-control" placeholder="example@email.com" required>
+              </div>
 
-      <div class="form-group">
-        <label>Username</label>
-        <input type="text" class="form-control" placeholder="Choose a username" required>
-      </div>
+              <div class="form-group">
+                <label>Username</label>
+                <input id="username" type="text" class="form-control" placeholder="Choose a username" required>
+              </div>
 
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" class="form-control" placeholder="Enter password" required>
-      </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input id="userPassword" type="password" class="form-control" placeholder="Enter password" required>
+              </div>
 
-      <div class="form-group">
-        <label>Confirm Password</label>
-        <input type="password" class="form-control" placeholder="Re-enter password" required>
-      </div>
+              <div class="form-group">
+                <label>Confirm Password</label>
+                <input id="confirmPassword" type="password" class="form-control" placeholder="Re-enter password" required>
+              </div>
 
-      <div class="form-group">
-        <label>Security Question</label>
-        <select class="form-control" required>
-          <option value="">Select a question</option>
-          <option>What is your birthplace?</option>
-          <option>What is your favorite teacher's name?</option>
-          <option>What was the name of your first pet?</option>
-        </select>
-      </div>
+              <div class="form-group">
+                <label>Security Question</label>
+                <select id="securityQuestion" class="form-control">
+                  <option value="">Select a question</option>
+                  <option>What is your birthplace?</option>
+                  <option>What is your favorite teacher's name?</option>
+                  <option>What was the name of your first pet?</option>
+                </select>
+              </div>
 
-      <div class="form-group">
-        <label>Security Answer</label>
-        <input type="text" class="form-control" placeholder="Your answer" required>
-      </div>
+              <div class="form-group">
+                <label>Security Answer</label>
+                <input id="securityAnswer" type="text" class="form-control" placeholder="Your answer">
+              </div>
 
-      <div class="form-group">
-        <label>Role / Permission</label>
-        <select class="form-control" required>
-          <option value="">Select role</option>
-          <option>Admin</option>
-          <option>Warehouse Manager</option>
-          <option>Sales Manager</option>
-        </select>
+              <div class="form-group">
+                <label>Business Address</label>
+                <textarea id="userAddress" class="form-control" rows="3" placeholder="Business address" required></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN : BUSINESS DETAILS -->
+          <div class="col-md-6">
+            <div class="about-card">
+              <h5 class="text-primary mb-3">Business / Company Information</h5>
+
+              <div class="form-group">
+                <label>Company Name</label>
+                <input id="companyName" type="text" class="form-control" placeholder="Company name">
+              </div>
+
+              <div class="form-group">
+                <label>Industry / Type of Business</label>
+                <input id="industry" type="text" class="form-control" placeholder="Retail, Manufacturing, etc.">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REGISTER BUTTON CENTER -->
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-success px-5 py-2">
+            Register
+          </button>
+        </div>
       </div>
     </div>
-    </div>
-
-    <!-- RIGHT COLUMN : BUSINESS DETAILS -->
-    <div class="col-md-6">
-    <div class="about-card">
-      <h5 class="text-primary mb-3">Business / Company Information</h5>
-
-      <div class="form-group">
-        <label>Company Name</label>
-        <input type="text" class="form-control" placeholder="Company name" required>
-      </div>
-
-      <div class="form-group">
-        <label>Industry / Type of Business</label>
-        <input type="text" class="form-control" placeholder="Retail, Manufacturing, etc." required>
-      </div>
-
-      <div class="form-group">
-        <label>Business Address</label>
-        <textarea class="form-control" rows="4" placeholder="Business address" required></textarea>
-      </div>
-
-    </div>
- </div>
-  </div>
-
-  <!-- REGISTER BUTTON CENTER -->
-  <div class="text-center mt-4">
-    <button class="btn btn-success px-5 py-2">
-      Register
-    </button>
-  </div>
-  </div>
-</div>
-</form>
+  </form>
 
 
- 
 
-<!-- FOOTER (STATIC) -->
-<footer class="bg-light text-center p-3 mt-0">
-  Inventory Management System © 2025
-</footer>
+
+  <!-- FOOTER (STATIC) -->
+  <footer class="bg-light text-center p-3 mt-0">
+    Inventory Management System © 2025
+  </footer>
 
 </body>
+
 </html>
